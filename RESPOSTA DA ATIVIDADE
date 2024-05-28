@@ -1,0 +1,161 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define NUM_ALUNOS 5
+#define NUM_NOTAS 4
+
+// Estrutura para armazenar informações de um aluno
+struct Aluno {
+    char nome[50];
+    float notas[NUM_NOTAS];
+    float notaTotal;
+    float media;
+};
+
+// Protótipos das funções
+void exibirMenu();
+void cadastrarAlunos(struct Aluno alunos[]);
+void cadastrarNotas(struct Aluno alunos[]);
+void calcularNotasMedias(struct Aluno alunos[]);
+void exibirResultados(struct Aluno alunos[]);
+void editarResultado(struct Aluno alunos[]);
+
+int main() {
+    struct Aluno alunos[NUM_ALUNOS];
+    int opcao;
+
+    // Menu principal
+    do {
+        exibirMenu();
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                cadastrarAlunos(alunos);
+                break;
+            case 2:
+                cadastrarNotas(alunos);
+                break;
+            case 3:
+                calcularNotasMedias(alunos);
+                break;
+            case 4:
+                exibirResultados(alunos);
+                break;
+            case 5:
+                editarResultado(alunos);
+                break;
+            case 6:
+                printf("Saindo do programa.\n");
+                break;
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
+        }
+    } while (opcao != 6);
+
+    return 0;
+}
+
+// Função para exibir o menu
+void exibirMenu() {
+    printf("\n### Menu ###\n");
+    printf("1. Cadastrar alunos\n");
+    printf("2. Cadastrar notas dos alunos\n");
+    printf("3. Calcular notas totais e médias\n");
+    printf("4. Exibir resultados dos alunos\n");
+    printf("5. Editar resultado de um aluno\n");
+    printf("6. Sair\n");
+    printf("Escolha uma opcao: ");
+}
+
+// Função para cadastrar os nomes dos alunos
+void cadastrarAlunos(struct Aluno alunos[]) {
+    printf("\n### Cadastro de Alunos ###\n");
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        printf("Digite o nome do aluno %d: ", i + 1);
+        scanf("%s", alunos[i].nome);
+    }
+}
+
+// Função para cadastrar as notas dos alunos
+void cadastrarNotas(struct Aluno alunos[]) {
+    printf("\n### Cadastro de Notas ###\n");
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        printf("Aluno %d (%s):\n", i + 1, alunos[i].nome);
+        for (int j = 0; j < NUM_NOTAS; j++) {
+            do {
+                printf("Digite a nota %d (entre 0 e 10): ", j + 1);
+                scanf("%f", &alunos[i].notas[j]);
+            } while (alunos[i].notas[j] < 0 || alunos[i].notas[j] > 10);
+        }
+    }
+}
+
+// Função para calcular notas totais e médias dos alunos
+void calcularNotasMedias(struct Aluno alunos[]) {
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        alunos[i].notaTotal = 0;
+        for (int j = 0; j < NUM_NOTAS; j++) {
+            alunos[i].notaTotal += alunos[i].notas[j];
+        }
+        alunos[i].media = alunos[i].notaTotal / NUM_NOTAS;
+    }
+
+    // Exibindo notas totais e médias
+    printf("\n### Notas Totais e Médias ###\n");
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        printf("Aluno %d (%s):\n", i + 1, alunos[i].nome);
+        printf("Nota Total: %.2f\n", alunos[i].notaTotal);
+        printf("Média: %.2f\n", alunos[i].media);
+        printf("\n");
+    }
+}
+
+// Função para exibir resultados dos alunos
+void exibirResultados(struct Aluno alunos[]) {
+    printf("\n### Resultados dos Alunos ###\n");
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        printf("Aluno %d (%s): ", i + 1, alunos[i].nome);
+        if (alunos[i].media < 4) {
+            printf("Reprovado\n");
+        } else if (alunos[i].media < 6) {
+            printf("Recuperacao\n");
+        } else {
+            printf("Aprovado\n");
+        }
+    }
+}
+
+// Função para editar o resultado de um aluno individualmente
+void editarResultado(struct Aluno alunos[]) {
+    char nome[50];
+    printf("\n### Edicao de Resultado ###\n");
+    printf("Digite o nome do aluno: ");
+    scanf("%s", nome);
+
+    bool encontrado = false;
+    for (int i = 0; i < NUM_ALUNOS; i++) {
+        if (strcmp(alunos[i].nome, nome) == 0) {
+            encontrado = true;
+            printf("Digite o novo resultado para o aluno %s (Reprovado, Recuperacao, Aprovado): ", alunos[i].nome);
+            char novoResultado[15];
+            scanf("%s", novoResultado);
+            if (strcmp(novoResultado, "Reprovado") == 0) {
+                alunos[i].media = 3.9; // Nota abaixo de 4 para reprovação
+            } else if (strcmp(novoResultado, "Recuperacao") == 0) {
+                alunos[i].media = 5.9; // Nota abaixo de 6 para recuperação
+            } else if (strcmp(novoResultado, "Aprovado") == 0) {
+                alunos[i].media = 6.1; // Nota acima de 6 para aprovação
+            } else {
+                printf("Opcao invalida. Resultado nao alterado.\n");
+            }
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Aluno nao encontrado.\n");
+    }
+}
